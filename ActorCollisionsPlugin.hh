@@ -36,6 +36,9 @@ namespace gazebo
     /// \brief Constructor
     public: ActorCollisionsPlugin();
 
+    /// \brief Default bitmask for collision detection
+    public: const unsigned int actor_bitmask = 0x00;
+
     /// \brief Load the actor plugin.
     /// \param[in] _model Pointer to the parent model.
     /// \param[in] _sdf Pointer to the plugin's SDF elements.

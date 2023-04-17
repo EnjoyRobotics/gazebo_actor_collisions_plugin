@@ -86,6 +86,9 @@ void ActorCollisionsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     {
       auto name = collision->GetName();
 
+      // Set bitmask for collisions so actors won't collide with actors
+      collision->GetSurface()->collideBitmask = this->actor_bitmask;
+
       if (scaling.find(name) != scaling.end())
       {
         auto boxShape = boost::dynamic_pointer_cast<gazebo::physics::BoxShape>(
