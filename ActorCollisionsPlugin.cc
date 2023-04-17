@@ -20,6 +20,7 @@
 #include <gazebo/physics/Actor.hh>
 #include <gazebo/physics/BoxShape.hh>
 #include <gazebo/physics/Collision.hh>
+#include <gazebo/physics/SurfaceParams.hh>
 #include <gazebo/physics/Link.hh>
 #include "ActorCollisionsPlugin.hh"
 #include <iostream>
