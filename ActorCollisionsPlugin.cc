@@ -106,6 +106,10 @@ void ActorCollisionsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
             offsets[name] + collision->InitialRelativePose());
       }
     }
+
+    auto inertial = link->GetInertial();
+    inertial->SetMass(0.0001);
+    inertial->SetInertiaMatrix(0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001);
   }
 }
 
