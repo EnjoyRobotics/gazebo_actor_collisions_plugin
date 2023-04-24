@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 project(gazebo_actor_collisions_plugin)
 
-cmake_policy(SET CMP0074 NEW)
-
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
