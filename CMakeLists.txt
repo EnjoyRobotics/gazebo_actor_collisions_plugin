@@ -12,3 +12,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
 
 add_library(ActorCollisionsPlugin SHARED ActorCollisionsPlugin.cc)
 target_link_libraries(ActorCollisionsPlugin ${GAZEBO_LIBRARIES})
+
+install(
+  TARGETS ActorCollisionsPlugin
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  )
