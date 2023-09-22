@@ -15,6 +15,8 @@
  *
 */
 
+#include <string>
+#include <map>
 #include <ignition/math/Vector3.hh>
 
 #include <gazebo/physics/Actor.hh>
@@ -22,19 +24,16 @@
 #include <gazebo/physics/Collision.hh>
 #include <gazebo/physics/SurfaceParams.hh>
 #include <gazebo/physics/Link.hh>
-#include "ActorCollisionsPlugin.hh"
-#include <iostream>
-using namespace gazebo;
-GZ_REGISTER_MODEL_PLUGIN(ActorCollisionsPlugin)
+#include "ActorCollisionsPlugin.hpp"
 
 
-/////////////////////////////////////////////////
+namespace gazebo
+{
+
 ActorCollisionsPlugin::ActorCollisionsPlugin()
 {
-std::cout<<"load ActorCollisionsPlugin"<<std::endl;
 }
 
-/////////////////////////////////////////////////
 void ActorCollisionsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
   // Get a pointer to the actor
@@ -44,29 +43,22 @@ void ActorCollisionsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   std::map<std::string, ignition::math::Vector3d> scaling;
   std::map<std::string, ignition::math::Pose3d> offsets;
   // Read in the collision scaling factors, if present
-  if (_sdf->HasElement("scaling"))
-  {
+  if (_sdf->HasElement("scaling")) {
     auto elem = _sdf->GetElement("scaling");
-    while (elem)
-    {
-      if (!elem->HasAttribute("collision"))
-      {
+    while (elem) {
+      if (!elem->HasAttribute("collision")) {
         gzwarn << "Skipping element without collision attribute" << std::endl;
         elem = elem->GetNextElement("scaling");
         continue;
       }
       auto name = elem->Get<std::string>("collision");
-//      std::cout<<"name: "<<name<<std::endl;
 
-      if (elem->HasAttribute("scale"))
-      {
+      if (elem->HasAttribute("scale")) {
         auto scale = elem->Get<ignition::math::Vector3d>("scale");
         scaling[name] = scale;
-//        std::cout<<scale[0]<<" "<<scale[1]<<" "<<scale[2]<<std::endl;
       }
 
-      if (elem->HasAttribute("pose"))
-      {
+      if (elem->HasAttribute("pose")) {
         auto pose = elem->Get<ignition::math::Pose3d>("pose");
         offsets[name] = pose;
       }
@@ -74,36 +66,33 @@ void ActorCollisionsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     }
   }
 
-  for (const auto &link : actor->GetLinks())
-  {
+  for (const auto & link : actor->GetLinks()) {
     // Init the links, which in turn enables collisions
     link->Init();
 
-    if (scaling.empty())
+    if (scaling.empty()) {
       continue;
+    }
 
     // Process all the collisions in all the links
-    for (const auto &collision : link->GetCollisions())
-    {
+    for (const auto & collision : link->GetCollisions()) {
       auto name = collision->GetName();
 
       // Set bitmask for collisions so actors won't collide with actors
       collision->GetSurface()->collideBitmask = this->actor_bitmask;
 
-      if (scaling.find(name) != scaling.end())
-      {
+      if (scaling.find(name) != scaling.end()) {
         auto boxShape = boost::dynamic_pointer_cast<gazebo::physics::BoxShape>(
-            collision->GetShape());
+          collision->GetShape());
 
         // Make sure we have a box shape.
-        if (boxShape)
+        if (boxShape) {
           boxShape->SetSize(boxShape->Size() * scaling[name]);
+        }
       }
 
-      if (offsets.find(name) != offsets.end())
-      {
-        collision->SetInitialRelativePose(
-            offsets[name] + collision->InitialRelativePose());
+      if (offsets.find(name) != offsets.end()) {
+        collision->SetInitialRelativePose(offsets[name] + collision->InitialRelativePose());
       }
     }
 
@@ -113,3 +102,7 @@ void ActorCollisionsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   }
 }
 
+// Register this plugin with the simulator
+GZ_REGISTER_MODEL_PLUGIN(ActorCollisionsPlugin)
+
+}  // namespace gazebo
